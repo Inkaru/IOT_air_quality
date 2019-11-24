@@ -11,4 +11,8 @@ Ouvrir le moniteur série (Ctrl+Maj+M)
 Lire sur 115200 baud
 Téléverser (Ctrl+U)
 
+Ressources :
+Boutons :
 http://forum.m5stack.com/topic/42/lesson-2-buttons-menu
+Serveur Web : 
+http://forum.m5stack.com/topic/60/lesson-3-1-wi-fi-access-point
