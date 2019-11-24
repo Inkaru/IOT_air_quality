@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/csv"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
 	"io"
 	"io/ioutil"
@@ -69,7 +70,8 @@ func importCSV(file string) {
 	//r := csv.NewReader(bufio.NewReader(csvfile))
 
 	fmt.Println("Starting import...")
-	database, _ := sql.Open("sqlite3", "./data.db")
+	//database, _ := sql.Open("sqlite3", "./data.db")
+	database, _ := sql.Open("mysql", "root:mysqladmin@tcp(127.0.0.1:3306)/test")
 	statement, _ := database.Prepare("INSERT INTO data (timestamp, latitude, longitude, temperature, air_quality) VALUES (?, ?, ?, ?, ?)")
 
 	tx, err := database.Begin()
@@ -91,6 +93,8 @@ func importCSV(file string) {
 		_, err = tx.Stmt(statement).Exec(record[0], record[1],record[2],record[3],record[4])
 
 		if err != nil {
+			fmt.Println("error during import")
+			log.Fatal(err)
 			break
 		}
 	}
@@ -111,8 +115,9 @@ func setupRoutes() {
 }
 
 func setupDB() {
-	database, _ := sql.Open("sqlite3", "./data.db")
-	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS data (id INTEGER PRIMARY KEY, timestamp TEXT,latitude DECIMAL ,longitude DECIMAL,temperature INT,air_quality INT)")
+	// database, _ := sql.Open("sqlite3", "./data.db")
+	database, _ := sql.Open("mysql", "root:mysqladmin@tcp(127.0.0.1:3306)/test")
+	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS data (timestamp TIMESTAMP ,latitude DECIMAL ,longitude DECIMAL,temperature INT,air_quality INT)")
 	statement.Exec()
 }
 
