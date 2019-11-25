@@ -111,6 +111,9 @@ func importCSV(file string) {
 
 func setupRoutes() {
 	http.HandleFunc("/upload", uploadFile)
+	http.HandleFunc("/get", func(w http.ResponseWriter, r *http.Request){
+		fmt.Println("GET")
+	})
 	http.ListenAndServe(":8080", nil)
 }
 
