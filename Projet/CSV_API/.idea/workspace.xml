@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="45cd449e-ccff-4025-a823-8ab33788b792" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MOCK_DATA.csv" beforeDir="false" afterPath="$PROJECT_DIR$/MOCK_DATA.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -49,12 +50,12 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\pierr\go\src\CSV_API" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\pierr\Documents\INSA\INFO\4A\IOT\Projet\CSV_API" />
       <recent name="C:\Users\pierr\Documents\INSA\INFO\4A\IOT\Projet\CSV_API\temp-csv" />
-      <recent name="C:\Users\pierr\go\src\CSV_API" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\pierr\go\src\CSV_API" />
     </key>
   </component>

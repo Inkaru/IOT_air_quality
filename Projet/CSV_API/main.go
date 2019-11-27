@@ -120,7 +120,7 @@ func setupRoutes() {
 func setupDB() {
 	// database, _ := sql.Open("sqlite3", "./data.db")
 	database, _ := sql.Open("mysql", "root:mysqladmin@tcp(127.0.0.1:3306)/test")
-	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS data (timestamp TIMESTAMP ,latitude DECIMAL ,longitude DECIMAL,temperature INT,air_quality INT)")
+	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS data (timestamp TIMESTAMP ,latitude FLOAT ,longitude FLOAT,temperature FLOAT,air_quality INT)")
 	statement.Exec()
 }
 
