@@ -4,6 +4,8 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
+#include <SD.h>
+//#include "utility/MPU9250.h"
 
 // ================= WIFI var =================
 WiFiClient client;
@@ -119,6 +121,61 @@ String makePage(String title, String contents) {
   return s;
 }
 
+// Write and read on the SD card
+/*void readFile(fs::FS &fs, const char * path) {
+    Serial.printf("Reading file: %s\n", path);
+
+    File file = fs.open(path);
+    if(!file){
+        Serial.println("Failed to open file for reading");
+        return;
+    }
+
+    Serial.print("Read from file: ");
+    while(file.available()){
+        int ch = file.read();
+        Serial.write(ch);
+    }
+}
+
+void writeFile(fs::FS &fs, const char * path, const char * message){
+    Serial.printf("Writing file: %s\n", path);
+    
+    File file = fs.open(path, FILE_WRITE);
+    if(!file){
+        Serial.println("Failed to open file for writing");
+        return;
+    }
+    if(file.print(message)){
+        Serial.println("File written");
+    } else {
+        Serial.println("Write failed");
+    }
+}
+
+
+
+void appendFile(fs::FS &fs, const char * path, const char * message){
+
+    Serial.printf("Appending to file: %s\n", path);
+    File file = fs.open(path, FILE_APPEND);
+
+    if(!file){
+        Serial.println("Failed to open file for appending");
+        return;
+    }
+
+    if(file.print(message)){
+        Serial.println("Message appended");
+    } else {
+        Serial.println("Append failed");
+    }
+
+    file.close();
+
+}*/
+
+
 void setup()
 {
   Serial.begin(115200);
@@ -163,6 +220,7 @@ void loop()
        now = millis();
        Serial.println("data : ");
        Serial.println(getData());
+       //appendFile(SD,"/data.txt",getData());
        Serial.println();
 
        Serial.println("Mode : ");
