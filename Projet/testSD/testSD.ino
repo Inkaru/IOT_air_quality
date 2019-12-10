@@ -1,12 +1,19 @@
 #include <M5Stack.h>
 #include <SD.h>
 #include "utility/MPU9250.h"
-#include <TH02_dev.h>
 #include <TinyGPS++.h>
+#include <TH02_dev.h>
 #include <WiFi.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
 #include "DFRobot_SHT20.h"
+
+// ================= GPS var =================
+static const uint32_t GPSBaud = 9600;
+// The TinyGPS++ object
+TinyGPSPlus gps;
+// The serial connection to the GPS device
+HardwareSerial ss(2);
 
 // ================= WIFI var =================
 WiFiClient client;
@@ -21,14 +28,7 @@ const IPAddress apIP(192, 168, 4, 1);
 const char* apSSID = "M5STACK_METEO";
 boolean webServerStarted = false;
 
-// ================= GPS var =================
-static const uint32_t GPSBaud = 9600;
-// The TinyGPS++ object
-TinyGPSPlus gps;
-// The serial connection to the GPS device
-HardwareSerial ss(2);
-
-//  ================= Air Quality var =================
+////  ================= Air Quality var =================
 //DFRobot_SHT20    sht20;
 //#define DATA_LEN 32
 //uint8_t Air_val[32]={0};
@@ -37,6 +37,82 @@ int16_t p_val[16]={0};
 // ================= General var =================
 int mode = 0;
 uint32_t now;
+
+void readFile(fs::FS &fs, const char * path) {
+    Serial.printf("Reading file: %s\n", path);
+    M5.Lcd.printf("Reading file: %s\n", path);
+
+    File file = fs.open(path);
+    if(!file){
+        Serial.println("Failed to open file for reading");
+        M5.Lcd.println("Failed to open file for reading");
+        return;
+    }
+
+    Serial.print("Read from file: ");
+    M5.Lcd.print("Read from file: ");
+    while(file.available()){
+        int ch = file.read();
+        Serial.write(ch);
+        M5.Lcd.write(ch);
+    }
+}
+
+void writeFile(fs::FS &fs, const char * path, const char * message){
+    Serial.printf("Writing file: %s\n", path);
+    M5.Lcd.printf("Writing file: %s\n", path);
+
+    File file = fs.open(path, FILE_WRITE);
+    if(!file){
+        Serial.println("Failed to open file for writing");
+        M5.Lcd.println("Failed to open file for writing");
+        return;
+    }
+    if(file.print(message)){
+        Serial.println("File written");
+        M5.Lcd.println("File written");
+    } else {
+        Serial.println("Write failed");
+        M5.Lcd.println("Write failed");
+    }
+}
+
+void appendFile(fs::FS &fs, const char * path, String message){
+
+    Serial.printf("Appending to file: %s\n", path);
+    File file = fs.open(path, FILE_APPEND);
+
+    if(!file){
+        Serial.println("Failed to open file for appending");
+        return;
+    }
+
+    if(file.print(message)){
+        Serial.println("Message appended");
+    } else {
+        Serial.println("Append failed");
+    }
+
+    file.close();
+
+}
+
+void buttons() {
+  if (M5.BtnA.wasReleased()) {
+      Serial.println("Mode 0");
+      mode = 0;
+      WiFi.disconnect();
+      webServerStarted = false;
+    } else if (M5.BtnB.wasReleased()) {
+      Serial.println("Mode 1");
+      mode = 1;
+      WiFi.disconnect();
+      webServerStarted = false;
+    } else if (M5.BtnC.wasReleased()) {
+      Serial.println("Mode 2");
+      mode = 2;
+    }
+}
 
 //void readAir() {
 //  int i = 0;
@@ -60,7 +136,7 @@ uint32_t now;
 //  }
 //}
 
-char * getData() {
+String getData() {
   // read THO2
   float temper = TH02.ReadTemperature();
   float humidity = TH02.ReadHumidity();
@@ -72,8 +148,28 @@ char * getData() {
   // read air
 //  readAir();
   // print all data
-  char donnees[128];
-  sprintf(donnees, "%02d-%02d-%02d %02d:%02d:%02d,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d,%d,%d", d.year(), d.month(), d.day(), t.hour(), t.minute(), t.second(), lat, lng, temper, humidity,  p_val[2],  p_val[3],  p_val[4],  p_val[8],  p_val[9],  p_val[10],  p_val[11],  p_val[12],  p_val[13]);
+  String donnees;
+//  sprintf(donnees, "%02d-%02d-%02d %02d:%02d:%02d,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d,%d,%d", d.year(), d.month(), d.day(), t.hour(), t.minute(), t.second(), lat, lng, temper, humidity,  p_val[2],  p_val[3],  p_val[4],  p_val[8],  p_val[9],  p_val[10],  p_val[11],  p_val[12],  p_val[13]);
+  donnees += d.year();
+  donnees += "-";
+  donnees += d.month();
+  donnees += "-";
+  donnees += d.day();
+  donnees += " ";
+  donnees += t.hour();
+  donnees += ":";
+  donnees += t.minute();
+  donnees += ":";
+  donnees += t.second();
+  donnees += ",";
+  donnees += lat;
+  donnees += ",";
+  donnees += lng;
+  donnees += ",";
+  donnees += temper;
+  donnees += ",";
+  donnees += humidity;
+  donnees += '\n';
   return donnees;
 }
 
@@ -176,58 +272,6 @@ String makePage(String title, String contents) {
   return s;
 }
 
-// Write and read on the SD card
-void readFile(fs::FS &fs, const char * path) {
-    Serial.printf("Reading file: %s\n", path);
-
-    File file = fs.open(path);
-    if(!file){
-        Serial.println("Failed to open file for reading");
-        return;
-    }
-
-    Serial.print("Read from file: ");
-    while(file.available()){
-        int ch = file.read();
-        Serial.write(ch);
-    }
-}
-
-void writeFile(fs::FS &fs, const char * path, const char * message){
-    Serial.printf("Writing file: %s\n", path);
-    
-    File file = fs.open(path, FILE_WRITE);
-    if(!file){
-        Serial.println("Failed to open file for writing");
-        return;
-    }
-    if(file.print(message)){
-        Serial.println("File written");
-    } else {
-        Serial.println("Write failed");
-    }
-}
-
-void appendFile(fs::FS &fs, const char * path, const char * message){
-
-    Serial.printf("Appending to file: %s\n", path);
-    File file = fs.open(path, FILE_APPEND);
-
-    if(!file){
-        Serial.println("Failed to open file for appending");
-        return;
-    }
-
-    if(file.print(message)){
-        Serial.println("Message appended");
-    } else {
-        Serial.println("Append failed");
-    }
-
-    file.close();
-
-}
-
 void sendData(){
 
 //  File file = SD.open("/data.txt");
@@ -275,125 +319,56 @@ void sendData(){
   }
 }
 
-void buttons() {
-  if (M5.BtnA.wasReleased()) {
-      Serial.println("Mode 0");
-      mode = 0;
-      webServerStarted = false;
-    } else if (M5.BtnB.wasReleased()) {
-      Serial.println("Mode 1");
-      mode = 1;
-      webServerStarted = false;
-    } else if (M5.BtnC.wasReleased()) {
-      Serial.println("Mode 2");
-      mode = 2;
-    }
-}
+void setup() {
+  // put your setup code here, to run once:
+  
+  // initialize the M5Stack object
+    M5.begin();
+  
+//    M5.Lcd.fillScreen(BLACK);
+//    M5.Lcd.setCursor(0, 10);
+//    M5.Lcd.printf("TF card test:\r\n");
+//
+//    //writeFile(SD, "/hello.txt", "Hello Pwet\n");
+//    appendFile(SD,"/hello.txt","Allez");
+//    readFile(SD, "/hello.txt");
 
-void setup()
-{
-  Serial.begin(115200);
-  // ================= WIFI setup =================
-  Serial.println();
-  Serial.println("Booted");
-  WiFi.mode(WIFI_STA);
+     // ================= GPS setup =================
+    ss.begin(GPSBaud);
 
-  // ================= THO2 setup =================
-  delay(150);
-  TH02.begin();
-  delay(100);
-  Serial.println("TH02_dev is available.\n");   
+    // ================= THO2 setup =================
+    delay(150);
+    TH02.begin();
+    delay(100);
+    Serial.println("TH02_dev is available.\n");   
 
-  // ================= GPS setup =================
-  ss.begin(GPSBaud);
+    // ================= WIFI setup =================
+    Serial.println();
+    Serial.println("Booted");
+    WiFi.mode(WIFI_STA);
 
-  // ================= Air Quality setup =================
-//  Serial2.begin(9600, SERIAL_8N1, 3, 1);
-//  pinMode(5, OUTPUT);
-//  digitalWrite(5, 1);
-//  delay(100);
-//  sht20.initSHT20();                                  // Init SHT20 Sensor
-//  delay(100);
-//  sht20.checkSHT20();
-
-  // ================= General setup =================
-  now = millis();
+    // ================= General setup =================
+    now = millis();
 
 }
 
-// The loop function is called in an endless loop
-void loop()
-{
-    M5.update();
-    
-    buttons();
+void loop() {
+  M5.update();
+  buttons();
 
-   if(millis() - now > 2000){
-       now = millis();
-       Serial.println("data : ");
-       Serial.println(getData());
-       appendFile(SD,"/data.txt","getData()");
-//       File file = SD.open("/data.txt");
-//       if(!file){
-//          Serial.println("Failed to open file");
-//        } else {  
-//            Serial.println("Suceed");
-//        }
-       Serial.println();
-       Serial.println("Mode : ");
-       Serial.println(mode);
+   if(millis() - now > 4000 && !webServerStarted){
+     now = millis();
+     String mess = "temp : ";
+     mess += TH02.ReadTemperature();
+     appendFile(SD,"/data.csv",getData());
+     Serial.println(getData());
 
    }
 
-    if(mode == 1 && checkConnection()){  // Client mode
-      sendData();
-      delay(5000);
-//        // Connection to server
-//        if (client.connect(ip, httpPort)) {
-//            // Sucessful connection
-//            client.print("GET /get HTTP/1.0\n\n");
-//            int maxloops = 0;
-//
-//            //wait for the server's reply to become available
-//            while (!client.available() && maxloops < 1000)
-//            {
-//                maxloops++;
-//                delay(1); //delay 1 msec
-//            }
-//            if (client.available() > 0)
-//            {
-//                //read back one line from the server
-//                String line = client.readStringUntil('\r');
-//                Serial.println(line);
-//            }
-//            else
-//            {
-//                Serial.println("client.available() timed out ");
-//            }
-//
-//                Serial.println("Closing connection.");
-//                client.stop();
-//
-//                Serial.println("Waiting 5 seconds before restarting...");
-//                delay(1000);
-//
-//                WiFi.disconnect();
-//                Serial.println("WiFi disconnected");
-//        } else {
-//            // Failed connection
-//            Serial.println("Connection failed.");
-//            Serial.println("Waiting 1 second before retrying...");
-//            delay(1000);
-//        }      
-
-    } 
-    
-    if(mode==2) {    // Server mode
+   if(mode==2) {    // Server mode
         if(!webServerStarted){
           startWebServer();
         }
         server.handleClient();
-    }    
-
-    
+    }  
 }
