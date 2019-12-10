@@ -71,8 +71,8 @@ func importCSV(file string) {
 
 	fmt.Println("Starting import...")
 	//database, _ := sql.Open("sqlite3", "./data.db")
-	database, _ := sql.Open("mysql", "root:mysqladmin@tcp(127.0.0.1:3306)/test")
-	statement, _ := database.Prepare("INSERT INTO data (timestamp, latitude, longitude, temperature, air_quality) VALUES (?, ?, ?, ?, ?)")
+	database, _ := sql.Open("mysql", "iotapi:Inserts_AirQuality19@tcp(127.0.0.1:3306)/iotpollution")
+	statement, _ := database.Prepare("INSERT INTO data (timestamp, latitude, longitude, temperature, PM1_0 , PM2_5 , PM10 , 0_3um , 0_5um , 1_0um , 2_5um , 5_0um , 10um ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 
 	tx, err := database.Begin()
 	if err != nil {
@@ -90,7 +90,7 @@ func importCSV(file string) {
 			log.Fatal(err)
 		}
 
-		_, err = tx.Stmt(statement).Exec(record[0], record[1],record[2],record[3],record[4])
+		_, err = tx.Stmt(statement).Exec(record[0], record[1], record[2], record[3], record[4], record[5], record[6], record[7], record[8], record[9], record[10], record[11], record[12])
 
 		if err != nil {
 			fmt.Println("error during import")
@@ -111,7 +111,7 @@ func importCSV(file string) {
 
 func setupRoutes() {
 	http.HandleFunc("/upload", uploadFile)
-	http.HandleFunc("/get", func(w http.ResponseWriter, r *http.Request){
+	http.HandleFunc("/get", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("GET")
 	})
 	http.ListenAndServe(":8080", nil)
@@ -119,8 +119,8 @@ func setupRoutes() {
 
 func setupDB() {
 	// database, _ := sql.Open("sqlite3", "./data.db")
-	database, _ := sql.Open("mysql", "root:mysqladmin@tcp(127.0.0.1:3306)/test")
-	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS data (timestamp TIMESTAMP ,latitude FLOAT ,longitude FLOAT,temperature FLOAT,air_quality INT)")
+	database, _ := sql.Open("mysql", "iotapi:Inserts_AirQuality19@tcp(127.0.0.1:3306)/iotpollution")
+	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS data (timestamp TIMESTAMP ,latitude FLOAT ,longitude FLOAT,temperature FLOAT,humidity FLOAT, PM1_0 INT, PM2_5 INT, PM10 INT, 0_3um INT, 0_5um INT, 1_0um INT, 2_5um INT, 5_0um INT, 10um INT)")
 	statement.Exec()
 }
 
