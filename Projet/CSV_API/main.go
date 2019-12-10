@@ -13,9 +13,31 @@ import (
 	"os"
 )
 
+func ReadCSVFromHttpRequest(w http.ResponseWriter, req *http.Request) {
+	// parse POST body as csv
+	reader := csv.NewReader(req.Body)
+	var results [][]string
+	for {
+		// read one row from csv
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		// add record to result set
+		results = append(results, record)
+	}
+
+	fmt.Println(results)
+}
+
 func uploadFile(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("File Upload Endpoint Hit")
-
+	body, err := ioutil.ReadAll(r.Body)
+	fmt.Println(body)
 	// Parse our multipart form, 10 << 20 specifies a maximum
 	// upload of 10 MB files.
 	r.ParseMultipartForm(10 << 20)
@@ -111,6 +133,7 @@ func importCSV(file string) {
 
 func setupRoutes() {
 	http.HandleFunc("/upload", uploadFile)
+	http.HandleFunc("/csv", ReadCSVFromHttpRequest)
 	http.HandleFunc("/get", func(w http.ResponseWriter, r *http.Request){
 		fmt.Println("GET")
 	})
