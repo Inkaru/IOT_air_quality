@@ -169,6 +169,24 @@ String getData() {
   donnees += temper;
   donnees += ",";
   donnees += humidity;
+  donnees += ",";
+  donnees += p_val[2];
+  donnees += ",";
+  donnees += p_val[3];
+  donnees += ",";
+  donnees += p_val[4];  
+  donnees += ",";
+  donnees += p_val[8];  
+  donnees += ",";
+  donnees += p_val[9];  
+  donnees += ",";
+  donnees += p_val[10];  
+  donnees += ",";
+  donnees += p_val[11];  
+  donnees += ",";
+  donnees += p_val[12];  
+  donnees += ",";
+  donnees += p_val[13];
   donnees += '\n';
   return donnees;
 }
@@ -307,6 +325,9 @@ void sendData(){
                 //read back one line from the server
                 String line = client.readStringUntil('\r');
                 Serial.println(line);
+                if(line == "OK 200") {  //TODO : vérifier que c'est le bon message
+                  SD.remove("/data.csv");
+                }
             }
             else
             {
