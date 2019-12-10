@@ -265,7 +265,14 @@ void startWebServer(){
         s += ", 10um :";
         s +=  p_val[13];
         s += "</div>";
+        s += "<div> <a href=\"/download\">Download</a> </div>";
         server.send(200, "text/html", makePage("Live Data", s));
+    });
+
+    server.on("/download", []() {
+       loadFromSdCard("/data.csv");
+       String s = "Downloading...";
+       server.send(200, "text/html",makePage("", s));
     });
     server.onNotFound([]() {
       String s = "<h1>Not Found</h1><p><a href=\"/data\">Live Data</a></p>";
@@ -338,6 +345,61 @@ void sendData(){
   } else {
     Serial.println("Connection failed");
   }
+}
+
+bool loadFromSdCard(String path) {
+  String dataType = "text/plain";
+  if (path.endsWith("/")) {
+    path += "index.htm";
+  }
+
+  if (path.endsWith(".src")) {
+    path = path.substring(0, path.lastIndexOf("."));
+  } else if (path.endsWith(".htm")) {
+    dataType = "text/html";
+  } else if (path.endsWith(".css")) {
+    dataType = "text/css";
+  } else if (path.endsWith(".js")) {
+    dataType = "application/javascript";
+  } else if (path.endsWith(".csv")) {
+    dataType = "text/xml";
+  } else if (path.endsWith(".png")) {
+    dataType = "image/png";
+  } else if (path.endsWith(".gif")) {
+    dataType = "image/gif";
+  } else if (path.endsWith(".jpg")) {
+    dataType = "image/jpeg";
+  } else if (path.endsWith(".ico")) {
+    dataType = "image/x-icon";
+  } else if (path.endsWith(".xml")) {
+    dataType = "text/xml";
+  } else if (path.endsWith(".pdf")) {
+    dataType = "application/pdf";
+  } else if (path.endsWith(".zip")) {
+    dataType = "application/zip";
+  }
+
+  File dataFile = SD.open(path.c_str());
+  if (dataFile.isDirectory()) {
+    path += "/index.htm";
+    dataType = "text/html";
+    dataFile = SD.open(path.c_str());
+  }
+
+  if (!dataFile) {
+    return false;
+  }
+
+  if (server.hasArg("download")) {
+    dataType = "application/octet-stream";
+  }
+
+  if (server.streamFile(dataFile, dataType) != dataFile.size()) {
+    Serial.println("Sent less data than expected!");
+  }
+
+  dataFile.close();
+  return true;
 }
 
 void setup() {
