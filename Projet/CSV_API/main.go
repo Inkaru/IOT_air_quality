@@ -13,6 +13,12 @@ import (
 	"os"
 )
 
+func handleError(err error){
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
 func ReadCSVFromHttpRequest(w http.ResponseWriter, req *http.Request) {
 	// parse POST body as csv
 	reader := csv.NewReader(req.Body)
@@ -23,15 +29,50 @@ func ReadCSVFromHttpRequest(w http.ResponseWriter, req *http.Request) {
 		if err == io.EOF {
 			break
 		}
-		if err != nil {
-			fmt.Println(err)
-		}
+		handleError(err)
 
 		// add record to result set
-		results = append(results, record)
+		if record[0] != "2000-0-0 0:0:0" {
+			results = append(results, record)
+		}
 	}
 
-	fmt.Println(results)
+	fmt.Println("Starting import...")
+	//database, _ := sql.Open("sqlite3", "./data.db")
+	//database, _ := sql.Open("mysql", "iotapi:Inserts_AirQuality19@tcp(127.0.0.1:3306)/iotpollution")
+	database, _ := sql.Open("mysql", "root:mysqladmin@tcp(127.0.0.1:3306)/test")
+	statement, _ := database.Prepare("INSERT INTO data (timestamp, latitude, longitude, temperature, PM1_0 , PM2_5 , PM10 , 0_3um , 0_5um , 1_0um , 2_5um , 5_0um , 10um ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+
+	tx, err := database.Begin()
+	handleError(err)
+
+	// Iterate through the records
+	for _, s := range results {
+		// Read each record from csv
+		record := s
+		if err == io.EOF {
+			break
+		}
+		handleError(err)
+
+		fmt.Println(record)
+		_, err = tx.Stmt(statement).Exec(record[0], record[1], record[2], record[3], record[4], record[5], record[6], record[7], record[8], record[9], record[10], record[11], record[12])
+
+		if err != nil {
+			fmt.Println("error during import")
+			log.Fatal(err)
+			break
+		}
+	}
+
+	if err != nil {
+		fmt.Println("doing rollback")
+		tx.Rollback()
+	} else {
+		tx.Commit()
+	}
+
+	fmt.Println("Import ended")
 }
 
 func uploadFile(w http.ResponseWriter, r *http.Request) {
@@ -93,7 +134,8 @@ func importCSV(file string) {
 
 	fmt.Println("Starting import...")
 	//database, _ := sql.Open("sqlite3", "./data.db")
-	database, _ := sql.Open("mysql", "iotapi:Inserts_AirQuality19@tcp(127.0.0.1:3306)/iotpollution")
+	//database, _ := sql.Open("mysql", "iotapi:Inserts_AirQuality19@tcp(127.0.0.1:3306)/iotpollution")
+	database, _ := sql.Open("mysql", "root:mysqladmin@tcp(127.0.0.1:3306)/test")
 	statement, _ := database.Prepare("INSERT INTO data (timestamp, latitude, longitude, temperature, PM1_0 , PM2_5 , PM10 , 0_3um , 0_5um , 1_0um , 2_5um , 5_0um , 10um ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 
 	tx, err := database.Begin()
@@ -141,9 +183,13 @@ func setupRoutes() {
 }
 
 func setupDB() {
-	// database, _ := sql.Open("sqlite3", "./data.db")
-	database, _ := sql.Open("mysql", "iotapi:Inserts_AirQuality19@tcp(127.0.0.1:3306)/iotpollution")
-	statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS data (timestamp TIMESTAMP ,latitude FLOAT ,longitude FLOAT,temperature FLOAT,humidity FLOAT, PM1_0 INT, PM2_5 INT, PM10 INT, 0_3um INT, 0_5um INT, 1_0um INT, 2_5um INT, 5_0um INT, 10um INT)")
+	//database, _ := sql.Open("sqlite3", "./data.db")
+	//database, _ := sql.Open("mysql", "admin:Inserts_AirQuality19@tcp(127.0.0.1:3306)/iotpollution")
+	database, _ := sql.Open("mysql", "root:mysqladmin@tcp(127.0.0.1:3306)/test")
+	statement, err := database.Prepare("CREATE TABLE IF NOT EXISTS data (timestamp TIMESTAMP ,latitude FLOAT ,longitude FLOAT,temperature FLOAT,humidity FLOAT, PM1_0 INT, PM2_5 INT, PM10 INT, 0_3um INT, 0_5um INT, 1_0um INT, 2_5um INT, 5_0um INT, 10um INT)")
+	if err != nil {
+		fmt.Println(err)
+	}
 	statement.Exec()
 }
 
