@@ -42,7 +42,7 @@ const char* host = "esp32sd";
 
 WebServer server(80);
 const IPAddress apIP(192, 168, 4, 1);
-const char* apSSID = "M5STACK_METEO";
+const char* apSSID = "M5STACK_TESTSD";
 boolean webServerStarted = false;
 
 int mode = 0;

@@ -281,12 +281,38 @@ void startWebServer(){
         s += ", 10um :";
         s +=  p_val[13];
         s += "</div>";
+        s += "<p><a href=\"/\">Back to menu</a></p>";
         server.send(200, "text/html", makePage("Live Data", s));
         smartDelay(1000);
     });
+    server.on("/download", [] () {
+      File myFile = SD.open("/data.csv");
+      
+      if(myFile.size() > 0){
+        server.setContentLength(CONTENT_LENGTH_UNKNOWN);
+        server.send(200, "text/csv", "");
+        
+        String thisData = "";
+        while(myFile.available()){
+          String ch = myFile.readStringUntil(';'); 
+          Serial.println(ch);
+          thisData += ch;
+          thisData += "\n";
+        }      
+        myFile.close();
+        server.sendContent("[");
+        server.sendContent(thisData);
+        server.sendContent("]");
+        SD.remove("/data.csv");
+      } else {
+        String s = "<h1><center>No data available</center></h1> <p>Wait a little bit before retrying.</p><p><a href=\"/\">Back to menu</a></p>";
+        server.send(200, "text/html", makePage("Air Quality IoT", s));
+      }
+    });
+    
     server.onNotFound([]() {
-      String s = "<h1>Not Found</h1><p><a href=\"/data\">Live Data</a></p>";
-      server.send(200, "text/html", makePage("Not found", s));
+      String s = "<h1><center>Welcome !</center></h1><p>From this page you can see our M5Stack collecting data by following \"Live data\" or downloading recent data with \"Download data\".</p><p><center><a href=\"/data\">Live Data</a></center></p><p><center><a href=\"/download\">Download data</a></center></p>";
+      server.send(200, "text/html", makePage("Air Quality IoT", s));
     });
 
     Serial.print("Starting Access Point at \"");
@@ -354,9 +380,9 @@ void setup() {
   
   // initialize the M5Stack object
     M5.begin();
-//
-//    M5.Lcd.writecommand(ILI9341_DISPOFF);
-//    M5.Lcd.setBrightness(0);
+
+    M5.Lcd.writecommand(ILI9341_DISPOFF);
+    M5.Lcd.setBrightness(0);
   
 //    M5.Lcd.fillScreen(BLACK);
 //    M5.Lcd.setCursor(0, 10);
