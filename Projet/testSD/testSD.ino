@@ -6,7 +6,6 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
-//#include "DFRobot_SHT20.h"
 
 // ================= GPS var =================
 static const uint32_t GPSBaud = 9600;
@@ -29,10 +28,10 @@ const char* apSSID = "M5STACK_METEO";
 boolean webServerStarted = false;
 
 ////  ================= Air Quality var =================
-//DFRobot_SHT20    sht20;
 #define DATA_LEN 32
 uint8_t Air_val[32]={0};
 int16_t p_val[16]={0};
+HardwareSerial air(1);
 
 // ================= General var =================
 int mode = 0;
@@ -116,8 +115,8 @@ void buttons() {
 
 void readAir() {
   int i = 0;
-  while(Serial2.available() && i < DATA_LEN){
-    Air_val[i] = Serial2.read();
+  while(air.available() && i < DATA_LEN){
+    Air_val[i] = air.read();
     i++;
   }
 
@@ -233,52 +232,61 @@ void startWebServer(){
     Serial.println(WiFi.softAPIP());
     server.on("/data", []() {
         readAir();
+        double lat = gps.location.lat();
+        double lng = gps.location.lng();
+        TinyGPSDate d = gps.date;
+        TinyGPSTime t = gps.time;
         String s = "<h1>Live Data</h1>";
         s += "<div>Date : ";
-        s += gps.date.day();
+        s += d.day();
         s += "-";
-        s += gps.date.month();
+        s += d.month();
         s += "-";
-        s += gps.date.year();
+        s += d.year();
         s += " ";
-        s += gps.time.hour();
-        s += "-";
-        s += gps.time.minute();
-        s += "-";
-        s += gps.time.second();
-        s += "</div>";        
+        s += t.hour();
+        s += "h ";
+        s += t.minute();
+        s += "m ";
+        s += t.second();
+        s += "s</div>";
+        s += "</br>" ;    
         s += "<div>Coordinates : ";
-        s += gps.location.lat();
-        s += ", ";
-        s += gps.location.lng();
+        s += lat;
+        s += " ";
+        s += lng;
         s += "</div>";
         s += "<div>Temp/Hum : ";
         s += TH02.ReadTemperature();
-        s += ", ";
+        s += " degrees, ";
         s += TH02.ReadHumidity();
-        s += "</div>";
+        s += "%</div>";
+        s += "</br>";
         s += "<div>";
-        s += "PM1.0 :";
+        s += "PM1.0 : ";
         s +=  p_val[2];
-        s += ", PM2.5 :";
+        s += "</br>";
+        s += "PM2.5 : ";
         s +=  p_val[3];
-        s += ", PM10 :";
+        s += "</br>";
+        s += "PM10 : ";
         s +=  p_val[4];
         s += "</div>";
         s += "<div>";
+        s += "</br>"; 
         s += "Number of Particles :";
         s += "</br>";
-        s += "0.3um :";
+        s += "0.3um : ";
         s +=  p_val[8];
-        s += ", 0.5um :";
+        s += ", 0.5um : ";
         s +=  p_val[9];
-        s += ", 1.0um :";
+        s += ", 1.0um : ";
         s +=  p_val[10];
-        s += ", 2.5um :";
+        s += "</br> 2.5um : ";
         s +=  p_val[11];
-        s += ", 5.0um :";
+        s += ", 5.0um : ";
         s +=  p_val[12];
-        s += ", 10um :";
+        s += ", 10um : ";
         s +=  p_val[13];
         s += "</div>";
         s += "<p><a href=\"/\">Back to menu</a></p>";
@@ -300,9 +308,7 @@ void startWebServer(){
           thisData += "\n";
         }      
         myFile.close();
-        server.sendContent("[");
         server.sendContent(thisData);
-        server.sendContent("]");
         SD.remove("/data.csv");
       } else {
         String s = "<h1><center>No data available</center></h1> <p>Wait a little bit before retrying.</p><p><a href=\"/\">Back to menu</a></p>";
@@ -375,26 +381,13 @@ static void smartDelay(unsigned long ms){
   } while (millis() - start < ms);
 }
 
-void setup() {
-  // put your setup code here, to run once:
-  
+void setup() {  
   // initialize the M5Stack object
     M5.begin();
 
     M5.Lcd.writecommand(ILI9341_DISPOFF);
     M5.Lcd.setBrightness(0);
   
-//    M5.Lcd.fillScreen(BLACK);
-//    M5.Lcd.setCursor(0, 10);
-//    M5.Lcd.printf("TF card test:\r\n");
-//
-//    //writeFile(SD, "/hello.txt", "Hello Pwet\n");
-//    appendFile(SD,"/hello.txt","Allez");
-//    readFile(SD, "/hello.txt");
-
-     // ================= GPS setup =================
-    ss.begin(GPSBaud);
-
     // ================= THO2 setup =================
     smartDelay(150);
     TH02.begin();
@@ -407,10 +400,13 @@ void setup() {
     WiFi.mode(WIFI_STA);
 
       // ================= Air Quality setup =================
-    Serial2.begin(9600, SERIAL_8N1, 3, 1);
+    air.begin(9600, SERIAL_8N1, 3, 1);
     pinMode(5, OUTPUT);
     digitalWrite(5, 1);
     smartDelay(100);
+    
+     // ================= GPS setup =================
+    ss.begin(GPSBaud);
 
     // ================= General setup =================
     now = millis();
