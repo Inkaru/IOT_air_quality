@@ -176,9 +176,10 @@ func importCSV(file string) {
 func setupRoutes() {
 	http.HandleFunc("/upload", uploadFile)
 	http.HandleFunc("/csv", ReadCSVFromHttpRequest)
-	http.HandleFunc("/get", func(w http.ResponseWriter, r *http.Request){
+	http.HandleFunc("/get", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("GET")
 	})
+	http.Handle("/", http.FileServer(http.Dir(".")))
 	http.ListenAndServe(":8080", nil)
 }
 
