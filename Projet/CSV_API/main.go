@@ -19,6 +19,7 @@ func handleError(err error){
 	}
 }
 
+// fonction utilisée par l'import depuis le m5satck
 func ReadCSVFromHttpRequest(w http.ResponseWriter, req *http.Request) {
 	// parse POST body as csv
 	reader := csv.NewReader(req.Body)
@@ -75,10 +76,9 @@ func ReadCSVFromHttpRequest(w http.ResponseWriter, req *http.Request) {
 	fmt.Println("Import ended")
 }
 
+// fonctions utilisée par l'import depuis la page html
 func uploadFile(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("File Upload Endpoint Hit")
-	body, err := ioutil.ReadAll(r.Body)
-	fmt.Println(body)
 	// Parse our multipart form, 10 << 20 specifies a maximum
 	// upload of 10 MB files.
 	r.ParseMultipartForm(10 << 20)
@@ -136,7 +136,7 @@ func importCSV(file string) {
 	//database, _ := sql.Open("sqlite3", "./data.db")
 	//database, _ := sql.Open("mysql", "iotapi:Inserts_AirQuality19@tcp(127.0.0.1:3306)/iotpollution")
 	database, _ := sql.Open("mysql", "root:mysqladmin@tcp(127.0.0.1:3306)/test")
-	statement, _ := database.Prepare("INSERT INTO data (timestamp, latitude, longitude, temperature, PM1_0 , PM2_5 , PM10 , 0_3um , 0_5um , 1_0um , 2_5um , 5_0um , 10um ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	statement, _ := database.Prepare("INSERT INTO data (timestamp, latitude, longitude, temperature, PM1_0 , PM2_5 , PM10 , 0_3um , 0_5um , 1_0um , 2_5um , 5_0um , 10um ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 
 	tx, err := database.Begin()
 	if err != nil {
