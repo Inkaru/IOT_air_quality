@@ -1,40 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_MYSQL",
-      "label": "MySQL",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "mysql",
-      "pluginName": "MySQL"
-    }
-  ],
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "6.4.4"
-    },
-    {
-      "type": "panel",
-      "id": "grafana-worldmap-panel",
-      "name": "Worldmap Panel",
-      "version": "0.2.1"
-    },
-    {
-      "type": "panel",
-      "id": "graph",
-      "name": "Graph",
-      "version": ""
-    },
-    {
-      "type": "datasource",
-      "id": "mysql",
-      "name": "MySQL",
-      "version": "1.0.0"
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -51,23 +15,602 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": null,
+  "id": 1,
   "links": [],
   "panels": [
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 19,
+      "panels": [],
+      "title": "Last 24 Hours",
+      "type": "row"
+    },
+    {
+      "datasource": null,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 1
+      },
+      "id": 14,
+      "options": {
+        "fieldOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "defaults": {
+            "mappings": [],
+            "max": 350,
+            "min": 0,
+            "thresholds": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 12
+              },
+              {
+                "color": "light-orange",
+                "value": 35.4
+              },
+              {
+                "color": "red",
+                "value": 55.4
+              },
+              {
+                "color": "semi-dark-purple",
+                "value": 150.4
+              },
+              {
+                "color": "dark-red",
+                "value": 250.4
+              }
+            ],
+            "unit": "conμgm3"
+          },
+          "override": {},
+          "values": false
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "6.5.2",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  PM2_5\nfrom data \nwhere \nUNIX_TIMESTAMP(timestamp) <= UNIX_TIMESTAMP(CURRENT_TIMESTAMP) AND \nUNIX_TIMESTAMP(timestamp) > (UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - 86400) \norder by timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "latitude"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "data",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "PM2.5 Last 24 Hours",
+      "type": "gauge"
+    },
+    {
+      "datasource": null,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 1
+      },
+      "id": 15,
+      "options": {
+        "fieldOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "defaults": {
+            "mappings": [],
+            "max": 604,
+            "min": 0,
+            "thresholds": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 55
+              },
+              {
+                "color": "light-orange",
+                "value": 155
+              },
+              {
+                "color": "red",
+                "value": 255
+              },
+              {
+                "color": "semi-dark-purple",
+                "value": 355
+              },
+              {
+                "color": "dark-red",
+                "value": 425
+              }
+            ],
+            "unit": "conμgm3"
+          },
+          "override": {},
+          "values": false
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "6.5.2",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  PM10\nfrom data \nwhere \nUNIX_TIMESTAMP(timestamp) <= UNIX_TIMESTAMP(CURRENT_TIMESTAMP) AND \nUNIX_TIMESTAMP(timestamp) > (UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - 86400) \norder by timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "latitude"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "data",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "PM10 Last 24 Hours",
+      "type": "gauge"
+    },
+    {
+      "circleMaxSize": "2",
+      "circleMinSize": 2,
+      "colors": [
+        "#37872D",
+        "#FADE2A",
+        "#FF9830",
+        "#F2495C",
+        "#A352CC",
+        "#8AB8FF",
+        "#3274D9",
+        "#1F60C4"
+      ],
+      "datasource": "MySQL",
+      "decimals": 0,
+      "esMetric": "Count",
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      },
+      "hideEmpty": false,
+      "hideZero": false,
+      "id": 6,
+      "initialZoom": "10",
+      "locationData": "table",
+      "mapCenter": "custom",
+      "mapCenterLatitude": "48.114700",
+      "mapCenterLongitude": "-1.679400",
+      "maxDataPoints": 1,
+      "mouseWheelZoom": true,
+      "options": {},
+      "showLegend": true,
+      "stickyLabels": true,
+      "tableQueryOptions": {
+        "geohashField": "geohash",
+        "labelField": "",
+        "latitudeField": "latitude",
+        "longitudeField": "longitude",
+        "metricField": "PM2_5",
+        "queryType": "coordinates"
+      },
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  latitude,\n  longitude,\n  PM2_5\nFROM data\nwhere \nUNIX_TIMESTAMP(timestamp) <= UNIX_TIMESTAMP(CURRENT_TIMESTAMP) AND \nUNIX_TIMESTAMP(timestamp) > (UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - 86400)\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "latitude"
+                ],
+                "type": "column"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "longitude"
+                ],
+                "type": "column"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "PM2_5"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "data",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": []
+        }
+      ],
+      "thresholds": "12,35.4,55.4,150.4,250.4,350.4,500",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Air quality PM2.5",
+      "type": "grafana-worldmap-panel",
+      "unitPlural": "",
+      "unitSingle": "",
+      "unitSingular": "µm/m3",
+      "valueName": "current"
+    },
+    {
+      "circleMaxSize": "2",
+      "circleMinSize": 2,
+      "colors": [
+        "#37872D",
+        "#FADE2A",
+        "#FF9830",
+        "#F2495C",
+        "#A352CC",
+        "#8AB8FF",
+        "#3274D9",
+        "#1F60C4"
+      ],
+      "datasource": "MySQL",
+      "decimals": 0,
+      "esMetric": "Count",
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 9
+      },
+      "hideEmpty": false,
+      "hideZero": false,
+      "id": 5,
+      "initialZoom": "10",
+      "locationData": "table",
+      "mapCenter": "custom",
+      "mapCenterLatitude": "48.114700",
+      "mapCenterLongitude": "-1.679400",
+      "maxDataPoints": 1,
+      "mouseWheelZoom": true,
+      "options": {},
+      "showLegend": true,
+      "stickyLabels": false,
+      "tableQueryOptions": {
+        "geohashField": "geohash",
+        "labelField": "",
+        "latitudeField": "latitude",
+        "longitudeField": "longitude",
+        "metricField": "PM10",
+        "queryType": "coordinates"
+      },
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  latitude,\n  longitude,\n  PM10\nFROM data\nwhere \nUNIX_TIMESTAMP(timestamp) <= UNIX_TIMESTAMP(CURRENT_TIMESTAMP) AND \nUNIX_TIMESTAMP(timestamp) > (UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - 86400)\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "latitude"
+                ],
+                "type": "column"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "longitude"
+                ],
+                "type": "column"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "PM10"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "data",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": []
+        }
+      ],
+      "thresholds": "54,154,254,354,424,504,604",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Air quality PM10",
+      "type": "grafana-worldmap-panel",
+      "unitPlural": "",
+      "unitSingle": "",
+      "unitSingular": "µm/m3",
+      "valueName": "total"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 19
+      },
+      "id": 21,
+      "panels": [],
+      "title": "All Time",
+      "type": "row"
+    },
+    {
+      "circleMaxSize": "2",
+      "circleMinSize": 2,
+      "colors": [
+        "#37872D",
+        "#FADE2A",
+        "#FF9830",
+        "#F2495C",
+        "#A352CC",
+        "#8AB8FF",
+        "#3274D9",
+        "#1F60C4"
+      ],
+      "datasource": "MySQL",
+      "decimals": 0,
+      "esMetric": "Count",
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 20
+      },
+      "hideEmpty": false,
+      "hideZero": false,
+      "id": 16,
+      "initialZoom": "10",
+      "locationData": "table",
+      "mapCenter": "custom",
+      "mapCenterLatitude": "48.114700",
+      "mapCenterLongitude": "-1.679400",
+      "maxDataPoints": 1,
+      "mouseWheelZoom": true,
+      "options": {},
+      "showLegend": true,
+      "stickyLabels": false,
+      "tableQueryOptions": {
+        "geohashField": "geohash",
+        "labelField": "",
+        "latitudeField": "latitude",
+        "longitudeField": "longitude",
+        "metricField": "PM2_5",
+        "queryType": "coordinates"
+      },
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  latitude,\n  longitude,\n  PM2_5\nFROM data\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "latitude"
+                ],
+                "type": "column"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "longitude"
+                ],
+                "type": "column"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "PM2_5"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "data",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": []
+        }
+      ],
+      "thresholds": "12,35.4,55.4,150.4,250.4,350.4,500",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Air quality PM2.5",
+      "type": "grafana-worldmap-panel",
+      "unitPlural": "",
+      "unitSingle": "",
+      "unitSingular": "µm/m3",
+      "valueName": "total"
+    },
+    {
+      "circleMaxSize": "2",
+      "circleMinSize": 2,
+      "colors": [
+        "#37872D",
+        "#FADE2A",
+        "#FF9830",
+        "#F2495C",
+        "#A352CC",
+        "#8AB8FF",
+        "#3274D9",
+        "#1F60C4"
+      ],
+      "datasource": "MySQL",
+      "decimals": 0,
+      "esMetric": "Count",
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 20
+      },
+      "hideEmpty": false,
+      "hideZero": false,
+      "id": 17,
+      "initialZoom": "10",
+      "locationData": "table",
+      "mapCenter": "custom",
+      "mapCenterLatitude": "48.114700",
+      "mapCenterLongitude": "-1.679400",
+      "maxDataPoints": 1,
+      "mouseWheelZoom": true,
+      "options": {},
+      "showLegend": true,
+      "stickyLabels": false,
+      "tableQueryOptions": {
+        "geohashField": "geohash",
+        "labelField": "",
+        "latitudeField": "latitude",
+        "longitudeField": "longitude",
+        "metricField": "PM10",
+        "queryType": "coordinates"
+      },
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": false,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  latitude,\n  longitude,\n  PM10\nFROM data\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "latitude"
+                ],
+                "type": "column"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "longitude"
+                ],
+                "type": "column"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "PM10"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "data",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": []
+        }
+      ],
+      "thresholds": "54,154,254,354,424,504,604",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Air quality PM10",
+      "type": "grafana-worldmap-panel",
+      "unitPlural": "",
+      "unitSingle": "",
+      "unitSingular": "µm/m3",
+      "valueName": "total"
+    },
     {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_MYSQL}",
+      "datasource": "MySQL",
       "fill": 1,
-      "fillGradient": 0,
+      "fillGradient": 2,
       "gridPos": {
         "h": 10,
-        "w": 11,
+        "w": 12,
         "x": 0,
-        "y": 0
+        "y": 30
       },
+      "hiddenSeries": false,
       "hideTimeOverride": false,
       "id": 2,
       "interval": "",
@@ -124,7 +667,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Panel Title",
+      "title": "Temperature",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -162,72 +705,61 @@
       }
     },
     {
-      "circleMaxSize": "2",
-      "circleMinSize": 2,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
-      ],
-      "datasource": "${DS_MYSQL}",
-      "decimals": 0,
-      "esMetric": "Count",
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "MySQL",
+      "fill": 1,
+      "fillGradient": 2,
       "gridPos": {
         "h": 10,
-        "w": 13,
-        "x": 11,
-        "y": 0
+        "w": 12,
+        "x": 12,
+        "y": 30
       },
-      "hideEmpty": false,
-      "hideZero": false,
-      "id": 4,
-      "initialZoom": "10",
-      "locationData": "table",
-      "mapCenter": "custom",
-      "mapCenterLatitude": "48",
-      "mapCenterLongitude": "-1.5",
-      "maxDataPoints": 1,
-      "mouseWheelZoom": true,
-      "options": {},
-      "showLegend": true,
-      "stickyLabels": false,
-      "tableQueryOptions": {
-        "geohashField": "geohash",
-        "labelField": "",
-        "latitudeField": "latitude",
-        "longitudeField": "longitude",
-        "metricField": "air_quality",
-        "queryType": "coordinates"
+      "hiddenSeries": false,
+      "hideTimeOverride": false,
+      "id": 12,
+      "interval": "",
+      "legend": {
+        "alignAsTable": false,
+        "avg": true,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
       },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
       "targets": [
         {
-          "format": "table",
+          "format": "time_series",
           "group": [],
           "metricColumn": "none",
           "rawQuery": false,
-          "rawSql": "SELECT\n  timestamp AS \"time\",\n  latitude,\n  longitude,\n  air_quality\nFROM data\nORDER BY timestamp",
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  humidity\nFROM data\nORDER BY timestamp",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "latitude"
-                ],
-                "type": "column"
-              }
-            ],
-            [
-              {
-                "params": [
-                  "longitude"
-                ],
-                "type": "column"
-              }
-            ],
-            [
-              {
-                "params": [
-                  "air_quality"
+                  "humidity"
                 ],
                 "type": "column"
               }
@@ -239,26 +771,58 @@
           "where": []
         }
       ],
-      "thresholds": "30,60",
+      "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
-      "title": "Map-air_quality",
-      "type": "grafana-worldmap-panel",
-      "unitPlural": "",
-      "unitSingle": "",
-      "valueName": "total"
+      "title": "Humidity",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
   "refresh": false,
-  "schemaVersion": 20,
+  "schemaVersion": 21,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-30d",
-    "to": "now"
+    "from": "2019-11-28T08:20:19.841Z",
+    "to": "2019-12-26T08:20:19.845Z"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -277,5 +841,5 @@
   "timezone": "",
   "title": "Temperature_dashboard2",
   "uid": "nCM3SbxWk",
-  "version": 4
+  "version": 7
 }
