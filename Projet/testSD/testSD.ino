@@ -140,10 +140,10 @@ String getData() {
   float temper = TH02.ReadTemperature();
   float humidity = TH02.ReadHumidity();
   // read GPS
-  double lat = gps.location.lat();
-  double lng = gps.location.lng();
   TinyGPSDate d = gps.date;
   TinyGPSTime t = gps.time;
+  String lat = String(gps.location.lat(),8);
+  String lng = String(gps.location.lng(),8);
   // read air
   readAir();
   // print all data
