@@ -196,6 +196,10 @@ func setupDB() {
 
 func main() {
 	fmt.Println("Hello World")
+
+	c := Conc{460,233}
+	fmt.Println(CalculateAQI(c))
+
 	setupDB()
 	setupRoutes()
 }
