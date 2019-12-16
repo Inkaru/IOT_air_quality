@@ -11,9 +11,10 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 )
 
-func handleError(err error){
+func handleError(err error) {
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -33,7 +34,7 @@ func ReadCSVFromHttpRequest(w http.ResponseWriter, req *http.Request) {
 		handleError(err)
 
 		// add record to result set
-		if record[0] != "2000-0-0 0:0:0" {
+		if validData(record) {
 			results = append(results, record)
 		}
 	}
@@ -42,7 +43,7 @@ func ReadCSVFromHttpRequest(w http.ResponseWriter, req *http.Request) {
 	//database, _ := sql.Open("sqlite3", "./data.db")
 	//database, _ := sql.Open("mysql", "iotapi:Inserts_AirQuality19@tcp(127.0.0.1:3306)/iotpollution")
 	database, _ := sql.Open("mysql", "root:mysqladmin@tcp(127.0.0.1:3306)/test")
-	statement, _ := database.Prepare("INSERT INTO data (timestamp, latitude, longitude, temperature, PM1_0 , PM2_5 , PM10 , 0_3um , 0_5um , 1_0um , 2_5um , 5_0um , 10um ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	statement, _ := database.Prepare("INSERT INTO data (timestamp, latitude, longitude, temperature, humidity,PM1_0 , PM2_5 , PM10 , 0_3um , 0_5um , 1_0um , 2_5um , 5_0um , 10um ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 
 	tx, err := database.Begin()
 	handleError(err)
@@ -57,7 +58,7 @@ func ReadCSVFromHttpRequest(w http.ResponseWriter, req *http.Request) {
 		handleError(err)
 
 		fmt.Println(record)
-		_, err = tx.Stmt(statement).Exec(record[0], record[1], record[2], record[3], record[4], record[5], record[6], record[7], record[8], record[9], record[10], record[11], record[12])
+		_, err = tx.Stmt(statement).Exec(record[0], record[1], record[2], record[3], record[4], record[5], record[6], record[7], record[8], record[9], record[10], record[11], record[12], record[13])
 
 		if err != nil {
 			fmt.Println("error during import")
@@ -136,7 +137,7 @@ func importCSV(file string) {
 	//database, _ := sql.Open("sqlite3", "./data.db")
 	//database, _ := sql.Open("mysql", "iotapi:Inserts_AirQuality19@tcp(127.0.0.1:3306)/iotpollution")
 	database, _ := sql.Open("mysql", "root:mysqladmin@tcp(127.0.0.1:3306)/test")
-	statement, _ := database.Prepare("INSERT INTO data (timestamp, latitude, longitude, temperature, PM1_0 , PM2_5 , PM10 , 0_3um , 0_5um , 1_0um , 2_5um , 5_0um , 10um ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	statement, _ := database.Prepare("INSERT INTO data (timestamp, latitude, longitude, temperature, humidity, PM1_0 , PM2_5 , PM10 , 0_3um , 0_5um , 1_0um , 2_5um , 5_0um , 10um ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 
 	tx, err := database.Begin()
 	if err != nil {
@@ -154,7 +155,9 @@ func importCSV(file string) {
 			log.Fatal(err)
 		}
 
-		_, err = tx.Stmt(statement).Exec(record[0], record[1], record[2], record[3], record[4], record[5], record[6], record[7], record[8], record[9], record[10], record[11], record[12])
+		if validData(record) {
+			_, err = tx.Stmt(statement).Exec(record[0], record[1], record[2], record[3], record[4], record[5], record[6], record[7], record[8], record[9], record[10], record[11], record[12], record[13])
+		}
 
 		if err != nil {
 			fmt.Println("error during import")
@@ -171,6 +174,38 @@ func importCSV(file string) {
 	}
 
 	fmt.Println("Import ended")
+}
+
+func validData(record []string) bool {
+
+	if record[0] == "2000-0-0 0:0:0" {
+		return false
+	}
+
+	temp, _ := strconv.ParseFloat(record[3], 64)
+	if temp > 100 {
+		return false
+	}
+
+	hum, _ := strconv.ParseFloat(record[4], 64)
+	if hum < 0 {
+		return false
+	}
+
+
+	sum := 0
+	n := 4
+	for n < 12 {
+		i, _ := strconv.Atoi(record[n])
+		fmt.Println(i)
+		sum += i
+		n++
+	}
+	if sum > 15000 {
+		return false
+	}
+
+	return true
 }
 
 func setupRoutes() {
@@ -197,8 +232,9 @@ func setupDB() {
 func main() {
 	fmt.Println("Hello World")
 
-	c := Conc{460,233}
-	fmt.Println(CalculateAQI(c))
+	// Pour faire des cacluls d'AQI
+	//c := Conc{460,233}
+	//fmt.Println(CalculateAQI(c))
 
 	setupDB()
 	setupRoutes()
