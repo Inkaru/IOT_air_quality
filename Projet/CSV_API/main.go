@@ -222,7 +222,7 @@ func setupDB() {
 	//database, _ := sql.Open("sqlite3", "./data.db")
 	//database, _ := sql.Open("mysql", "admin:Inserts_AirQuality19@tcp(127.0.0.1:3306)/iotpollution")
 	database, _ := sql.Open("mysql", "root:mysqladmin@tcp(127.0.0.1:3306)/test")
-	statement, err := database.Prepare("CREATE TABLE IF NOT EXISTS data (timestamp TIMESTAMP ,latitude FLOAT ,longitude FLOAT,temperature FLOAT,humidity FLOAT, PM1_0 INT, PM2_5 INT, PM10 INT, 0_3um INT, 0_5um INT, 1_0um INT, 2_5um INT, 5_0um INT, 10um INT)")
+	statement, err := database.Prepare("CREATE TABLE IF NOT EXISTS data (timestamp TIMESTAMP ,latitude FLOAT ,longitude FLOAT,temperature FLOAT,humidity FLOAT, PM1_0 INT, PM2_5 INT, PM10 INT, 0_3um INT, 0_5um INT, 1_0um INT, 2_5um INT, 5_0um INT, 10um INT, PRIMARY KEY (timestamp, latitude, longitude))")
 	if err != nil {
 		fmt.Println(err)
 	}
