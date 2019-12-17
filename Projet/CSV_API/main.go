@@ -179,16 +179,26 @@ func importCSV(file string) {
 func validData(record []string) bool {
 
 	if record[0] == "2000-0-0 0:0:0" {
+		fmt.Println("null date")
+		return false
+	}
+
+	lat, _ := strconv.ParseFloat(record[1], 64)
+	long, _ := strconv.ParseFloat(record[2], 64)
+	if lat == 0.0 && long == 0.0 {
+		fmt.Println("null coords")
 		return false
 	}
 
 	temp, _ := strconv.ParseFloat(record[3], 64)
 	if temp > 100 {
+		fmt.Println("null temp")
 		return false
 	}
 
 	hum, _ := strconv.ParseFloat(record[4], 64)
 	if hum < 0 {
+		fmt.Println("null hum")
 		return false
 	}
 
@@ -197,11 +207,12 @@ func validData(record []string) bool {
 	n := 4
 	for n < 12 {
 		i, _ := strconv.Atoi(record[n])
-		fmt.Println(i)
+		//fmt.Println(i)
 		sum += i
 		n++
 	}
 	if sum > 15000 {
+		fmt.Println("null air")
 		return false
 	}
 
@@ -222,7 +233,7 @@ func setupDB() {
 	//database, _ := sql.Open("sqlite3", "./data.db")
 	//database, _ := sql.Open("mysql", "admin:Inserts_AirQuality19@tcp(127.0.0.1:3306)/iotpollution")
 	database, _ := sql.Open("mysql", "root:mysqladmin@tcp(127.0.0.1:3306)/test")
-	statement, err := database.Prepare("CREATE TABLE IF NOT EXISTS data (timestamp TIMESTAMP ,latitude FLOAT ,longitude FLOAT,temperature FLOAT,humidity FLOAT, PM1_0 INT, PM2_5 INT, PM10 INT, 0_3um INT, 0_5um INT, 1_0um INT, 2_5um INT, 5_0um INT, 10um INT, PRIMARY KEY (timestamp, latitude, longitude))")
+	statement, err := database.Prepare("CREATE TABLE IF NOT EXISTS data (timestamp TIMESTAMP ,latitude DOUBLE,longitude DOUBLE,temperature FLOAT,humidity FLOAT, PM1_0 INT, PM2_5 INT, PM10 INT, 0_3um INT, 0_5um INT, 1_0um INT, 2_5um INT, 5_0um INT, 10um INT)")
 	if err != nil {
 		fmt.Println(err)
 	}
