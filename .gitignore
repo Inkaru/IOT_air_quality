@@ -3,6 +3,5 @@ TP_IOT/.idea/*
 .vscode/*
 node_modules/*
 package-lock.json
-CSV_API/.idea/
-CSV_API/temp-csv/*.csv
-CSV_API/main.exe
+Projet/CSV_API/.idea/workspace.xml
+Projet/CSV_API/.idea/*.iml
