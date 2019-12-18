@@ -1,46 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_MYSQL",
-      "label": "MySQL",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "mysql",
-      "pluginName": "MySQL"
-    }
-  ],
-  "__requires": [
-    {
-      "type": "panel",
-      "id": "gauge",
-      "name": "Gauge",
-      "version": ""
-    },
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "6.4.4"
-    },
-    {
-      "type": "panel",
-      "id": "grafana-worldmap-panel",
-      "name": "Worldmap Panel",
-      "version": "0.2.1"
-    },
-    {
-      "type": "panel",
-      "id": "graph",
-      "name": "Graph",
-      "version": ""
-    },
-    {
-      "type": "datasource",
-      "id": "mysql",
-      "name": "MySQL",
-      "version": "1.0.0"
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -57,12 +15,12 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": null,
+  "id": 1,
   "links": [],
   "panels": [
     {
       "collapsed": false,
-      "datasource": "${DS_MYSQL}",
+      "datasource": "MySQL",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -75,7 +33,7 @@
       "type": "row"
     },
     {
-      "datasource": "${DS_MYSQL}",
+      "datasource": "MySQL",
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -90,32 +48,28 @@
           ],
           "defaults": {
             "mappings": [],
-            "max": 350,
+            "max": 200,
             "min": 0,
             "thresholds": [
               {
-                "color": "green",
+                "color": "dark-green",
                 "value": null
               },
               {
-                "color": "yellow",
-                "value": 12
+                "color": "semi-dark-green",
+                "value": 15
               },
               {
-                "color": "light-orange",
-                "value": 35.4
+                "color": "semi-dark-yellow",
+                "value": 30
               },
               {
-                "color": "red",
-                "value": 55.4
-              },
-              {
-                "color": "semi-dark-purple",
-                "value": 150.4
+                "color": "dark-orange",
+                "value": 55
               },
               {
                 "color": "dark-red",
-                "value": 250.4
+                "value": 110
               }
             ],
             "unit": "conμgm3"
@@ -127,7 +81,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "6.4.4",
+      "pluginVersion": "6.5.2",
       "targets": [
         {
           "format": "time_series",
@@ -164,7 +118,7 @@
       "type": "gauge"
     },
     {
-      "datasource": "${DS_MYSQL}",
+      "datasource": "MySQL",
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -179,32 +133,28 @@
           ],
           "defaults": {
             "mappings": [],
-            "max": 604,
+            "max": 300,
             "min": 0,
             "thresholds": [
               {
-                "color": "green",
+                "color": "dark-green",
                 "value": null
               },
               {
-                "color": "yellow",
-                "value": 55
+                "color": "semi-dark-green",
+                "value": 25
               },
               {
-                "color": "light-orange",
-                "value": 155
+                "color": "semi-dark-yellow",
+                "value": 50
               },
               {
-                "color": "red",
-                "value": 255
-              },
-              {
-                "color": "semi-dark-purple",
-                "value": 355
+                "color": "dark-orange",
+                "value": 90
               },
               {
                 "color": "dark-red",
-                "value": 425
+                "value": 180
               }
             ],
             "unit": "conμgm3"
@@ -216,7 +166,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "6.4.4",
+      "pluginVersion": "6.5.2",
       "targets": [
         {
           "format": "time_series",
@@ -257,15 +207,12 @@
       "circleMinSize": 2,
       "colors": [
         "#37872D",
-        "#FADE2A",
-        "#FF9830",
-        "#F2495C",
-        "#A352CC",
-        "#8AB8FF",
-        "#3274D9",
-        "#1F60C4"
+        "#96D98D",
+        "#FFEE52",
+        "#FF780A",
+        "#C4162A"
       ],
-      "datasource": "${DS_MYSQL}",
+      "datasource": "MySQL",
       "decimals": 0,
       "esMetric": "Count",
       "gridPos": {
@@ -335,7 +282,7 @@
           "where": []
         }
       ],
-      "thresholds": "12,35.4,55.4,150.4,250.4,350.4,500",
+      "thresholds": "15,30,55,110",
       "timeFrom": null,
       "timeShift": null,
       "title": "Air quality PM2.5",
@@ -350,15 +297,12 @@
       "circleMinSize": 2,
       "colors": [
         "#37872D",
-        "#FADE2A",
-        "#FF9830",
-        "#F2495C",
-        "#A352CC",
-        "#8AB8FF",
-        "#3274D9",
-        "#1F60C4"
+        "#96D98D",
+        "#FFEE52",
+        "#FA6400",
+        "#C4162A"
       ],
-      "datasource": "${DS_MYSQL}",
+      "datasource": "MySQL",
       "decimals": 0,
       "esMetric": "Count",
       "gridPos": {
@@ -428,7 +372,7 @@
           "where": []
         }
       ],
-      "thresholds": "54,154,254,354,424,504,604",
+      "thresholds": "25,50,90,180",
       "timeFrom": null,
       "timeShift": null,
       "title": "Air quality PM10",
@@ -440,7 +384,7 @@
     },
     {
       "collapsed": false,
-      "datasource": "${DS_MYSQL}",
+      "datasource": "MySQL",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -465,7 +409,7 @@
         "#3274D9",
         "#1F60C4"
       ],
-      "datasource": "${DS_MYSQL}",
+      "datasource": "MySQL",
       "decimals": 0,
       "esMetric": "Count",
       "gridPos": {
@@ -558,7 +502,7 @@
         "#3274D9",
         "#1F60C4"
       ],
-      "datasource": "${DS_MYSQL}",
+      "datasource": "MySQL",
       "decimals": 0,
       "esMetric": "Count",
       "gridPos": {
@@ -639,11 +583,13 @@
       "valueName": "total"
     },
     {
-      "aliasColors": {},
+      "aliasColors": {
+        "temperature": "red"
+      },
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_MYSQL}",
+      "datasource": "MySQL",
       "fill": 1,
       "fillGradient": 2,
       "gridPos": {
@@ -747,11 +693,13 @@
       }
     },
     {
-      "aliasColors": {},
+      "aliasColors": {
+        "humidity": "blue"
+      },
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_MYSQL}",
+      "datasource": "MySQL",
       "fill": 1,
       "fillGradient": 2,
       "gridPos": {
@@ -856,7 +804,7 @@
     }
   ],
   "refresh": false,
-  "schemaVersion": 20,
+  "schemaVersion": 21,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -883,5 +831,5 @@
   "timezone": "",
   "title": "Temperature_dashboard2",
   "uid": "nCM3SbxWk",
-  "version": 1
+  "version": 11
 }
