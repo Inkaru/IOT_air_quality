@@ -36,6 +36,7 @@ HardwareSerial air(1);
 // ================= General var =================
 int mode = 0;
 uint32_t now;
+uint32_t auto_upload;
 
 void readFile(fs::FS &fs, const char * path) {
     Serial.printf("Reading file: %s\n", path);
@@ -337,7 +338,7 @@ void sendData4(){
   Serial.println();
   Serial.println("file exists");
   Serial.println(myFile);
-  
+
   if(myFile && checkConnection()){
   if (client.connect(ip, httpPort)) {
 
@@ -366,10 +367,12 @@ void sendData4(){
     client.stop();
 
     SD.remove("/data.csv");
-    mode = 0;
+    
     
   }
   }
+  mode = 0;
+  WiFi.disconnect();
 }
 
 static void smartDelay(unsigned long ms){
@@ -410,12 +413,18 @@ void setup() {
 
     // ================= General setup =================
     now = millis();
+    auto_upload = millis();
 
 }
 
 void loop() {
   M5.update();
   buttons();
+
+  if(millis() - auto_upload > 300000 && mode == 0) {   
+    sendData4();
+    auto_upload = millis();
+  }
 
    if(millis() - now > 10000 && mode == 0){
      now = millis();
@@ -431,6 +440,7 @@ void loop() {
         if(!webServerStarted){
           startWebServer();
         }
+        
         server.handleClient();
     }  
 
